@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect } from "react";
-import { toolsResponse, toolRentalChargesResponse } from "./types";
+import { useEffect, useState } from "react";
+import { ToolsResponse, ToolRentalChargesResponse } from "./interfaces";
 import { GetTools, GetRentalCharges } from "./utils/api";
 import "./App.css";
 
 function App() {
+  const [selectedTool, setSelectedTool] = useState<ToolRentalChargesResponse>();
   const { data: toolsData, refetch: toolsRefetch } = GetTools();
 
   const {
@@ -24,32 +25,31 @@ function App() {
     console.log(toolRentalChargesData, toolsData);
   }, [toolRentalChargesData, toolsData]);
 
-  const toolSelectOnChange = ((event:React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(event.target.value);
-  });
+  useEffect(() => {
+    console.log("selectedTool", selectedTool);
+  }, [selectedTool]);
+
+  const toolSelectOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedTool(JSON.parse(event.target.value));
+  };
 
   return (
     <>
       {toolRentalChargesData !== undefined &&
       toolRentalChargesStatus === "success" ? (
         <div>
-          <label
-            htmlFor="tool"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Tools:
-          </label>
           <select
             id="tool"
             name="tool"
             onChange={toolSelectOnChange}
+            defaultValue="{}"
             className="mt-2 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
           >
-            <option value="">Choose a tool</option>
-            {toolRentalChargesData.map((tool: toolRentalChargesResponse) => (
+            <option value="{}">Choose a tool...</option>
+            {toolRentalChargesData.map((tool: ToolRentalChargesResponse) => (
               <option
                 key={`${tool.type}-dropdown`}
-                value={tool.type}
+                value={JSON.stringify(tool)}
                 className="flex justify-between"
               >
                 {tool.type}-{tool.dailyCharge}

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { toolsResponse, toolRentalChargesResponse } from "../types";
+import { ToolsResponse, ToolRentalChargesResponse } from "../interfaces";
 
 export const GetTools = () =>
-  useQuery<toolsResponse[]>({
+  useQuery<ToolsResponse[]>({
     queryKey: ["tools"],
     enabled: false,
     queryFn: async () => {
@@ -15,7 +15,7 @@ export const GetTools = () =>
   });
 
 export const GetRentalCharges = () =>
-  useQuery<toolRentalChargesResponse[]>({
+  useQuery<ToolRentalChargesResponse[]>({
     queryKey: ["rentalCharges"],
     enabled: false,
     queryFn: async () => {
