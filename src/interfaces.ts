@@ -7,6 +7,14 @@ export interface ToolsResponse extends ToolType {
   brand: "Stihl" | "Werner" | "DeWalt" | "Ridgid";
 };
 
+export type ChargeableDays = {
+  weekday: boolean;
+  weekend: boolean;
+  holiday: boolean;
+}
 export interface ToolRentalChargesResponse extends ToolType {
   dailyCharge: number;
+  charges?: ChargeableDays;
 }
+
+export interface ToolFullData extends ToolsResponse, ToolRentalChargesResponse {}

@@ -1,14 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useId } from "react";
-import { ToolsResponse, ToolRentalChargesResponse } from "./interfaces";
+import {
+  ToolsResponse,
+  ToolRentalChargesResponse,
+  ToolFullData,
+} from "./interfaces";
 import { GetTools, GetRentalCharges } from "./utils/api";
+import { billableDays, formattedDate } from "./utils";
+import RentalAgreement from "./components/RentalAgreement";
 import "./App.css";
 import DatePicker from "react-datepicker";
-import { addDays } from "date-fns";
+import { format, addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
-  const [selectedTool, setSelectedTool] = useState<ToolRentalChargesResponse>();
+  const [selectedTool, setSelectedTool] = useState<ToolFullData>();
+  const [toolFullData, setToolFullData] = useState<ToolFullData[]>();
 
   // Discount Component
   const DISCOUNT_RANGE = { min: 0, max: 100 };
@@ -17,9 +24,15 @@ function App() {
 
   // Datepicker Component
   const [startDate, setStartDate] = useState<Date | null>(null);
+  const startDateFormatted = formattedDate(startDate);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const endDateFormatted = formattedDate(endDate);
 
-  const { data: toolsData, refetch: toolsRefetch } = GetTools();
+  const {
+    data: toolsData,
+    refetch: toolsRefetch,
+    status: toolStatus,
+  } = GetTools();
 
   const {
     data: toolRentalChargesData,
@@ -34,9 +47,32 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (toolsData !== undefined && toolRentalChargesData !== undefined) {
+      const fullToolData: ToolFullData[] = toolsData.map(
+        (tool: ToolsResponse) => {
+          const toolByType = toolRentalChargesData.find(
+            (rentalCharge: ToolRentalChargesResponse) =>
+              rentalCharge.type === tool.type
+          );
+          return {
+            ...tool,
+            dailyCharge: toolByType?.dailyCharge || 0,
+            charges: toolByType?.charges || undefined,
+          };
+        }
+      );
+      setToolFullData(fullToolData);
+    }
+  }, [toolsData, toolRentalChargesData]);
+
   // TEMP, FOR TESTING
   useEffect(() => {
-    console.log('discountValue',discountValue);
+    console.log("toolFullData", toolFullData);
+  }, [toolFullData]);
+
+  useEffect(() => {
+    console.log("discountValue", discountValue);
   }, [discountValue]);
 
   useEffect(() => {
@@ -62,11 +98,33 @@ function App() {
     setDiscountValue(discountVal);
   };
 
+  // Temp
+  useEffect(() => {
+    if (
+      selectedTool?.charges !== undefined &&
+      startDate !== null &&
+      endDate !== null
+    ) {
+      const chargedDays = billableDays(
+        startDate,
+        endDate,
+        selectedTool.charges
+      );
+      console.log("chargedDays", chargedDays);
+    }
+  }, [selectedTool?.charges, startDate, endDate]);
+
+  // const getRentalAgreement = (
+  //   startDate: Date,
+  //   endDate: Date,
+  //   tool: ToolFullData,
+  //   discount: number
+  // ) => {};
+
   return (
     <>
       {/* Component - Tool Select */}
-      {toolRentalChargesData !== undefined &&
-      toolRentalChargesStatus === "success" ? (
+      {toolFullData !== undefined ? (
         <div>
           <select
             id="tool"
@@ -76,18 +134,18 @@ function App() {
             className="mt-2 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
           >
             <option value="{}">Choose a tool...</option>
-            {toolRentalChargesData.map((tool: ToolRentalChargesResponse) => (
+            {toolFullData.map((tool: ToolFullData) => (
               <option
-                key={`${tool.type}-dropdown`}
+                key={`${tool.type}-${tool.brand}-dropdown`}
                 value={JSON.stringify(tool)}
                 className="flex justify-between"
               >
-                {tool.type} - (${tool.dailyCharge}/day)
+                {tool.type} - {tool.brand} - (${tool.dailyCharge}/day)
               </option>
             ))}
           </select>
         </div>
-      ) : toolRentalChargesStatus === "error" ? (
+      ) : toolRentalChargesStatus === "error" || toolStatus === "error" ? (
         <h2>There was an error initializing the tool list</h2>
       ) : (
         <h2>Initializing Tool Rental...</h2>
@@ -113,7 +171,14 @@ function App() {
       <div className="flex gap-2 mt-3">
         {selectedTool?.type !== undefined ? (
           <div>
-            <h3 className="font-bold text-sm">Start Date:</h3>
+            <h3 className="font-bold text-sm">
+              <span>Start Date:</span>
+              {startDateFormatted !== null && (
+                <span className="font-normal text-gray-600 pl-3">
+                  {startDateFormatted}
+                </span>
+              )}
+            </h3>
             <DatePicker
               selected={startDate}
               onChange={(date) => {
@@ -126,9 +191,16 @@ function App() {
           </div>
         ) : null}
 
-        {selectedTool?.type !== undefined && startDate !== null ? (
+        {selectedTool?.code !== undefined && startDate !== null ? (
           <div>
-            <h3 className="font-bold text-sm">End Date:</h3>
+            <h3 className="font-bold text-sm">
+              <span>End Date:</span>
+              {endDateFormatted !== null && (
+                <span className="font-normal text-gray-600 pl-3">
+                  {endDateFormatted}
+                </span>
+              )}
+            </h3>
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
@@ -140,15 +212,18 @@ function App() {
       </div>
 
       {/* Component - get Rental Agreement */}
-      {(selectedTool?.type !== undefined && startDate !== null && endDate !== null) ?
-      <button
-        type="button"
-        className="mt-3 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-      >
-        Get Rental Agreement
-      </button>
-      
-      : null }
+      {selectedTool?.code !== undefined &&
+      toolFullData !== undefined &&
+      startDate !== null &&
+      endDate !== null ? (
+        <RentalAgreement
+          toolCode={selectedTool.code}
+          startDate={startDate}
+          endDate={endDate}
+          discount={discountValue}
+          toolFullData={toolFullData}
+        />
+      ) : null}
     </>
   );
 }
