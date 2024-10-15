@@ -25,6 +25,11 @@ type Props = {
 const RentalAgreement = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isError, setIsError] = useState<string>();
+
+  // FYI: I prefer to round money values to the nearest cent
+  // after all calculations are done, so money values will
+  // have more than 2 decimal points until they are run through
+  // roundToNearestCent()
   const [finalCosts, setFinalCosts] = useState<{
     preDiscountAmount: number;
     discountAmount: number;
@@ -51,6 +56,7 @@ const RentalAgreement = (props: Props) => {
       setIsOpen(true);
     }
   };
+ 
   return (
     <>
       <button
