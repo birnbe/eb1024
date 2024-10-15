@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useId } from "react";
 import {
   ToolsResponse,
@@ -6,11 +5,11 @@ import {
   ToolFullData,
 } from "./interfaces";
 import { GetTools, GetRentalCharges } from "./utils/api";
-import { billableDays, formattedDate } from "./utils";
+import { formattedDate } from "./utils";
 import RentalAgreement from "./components/RentalAgreement";
 import "./App.css";
 import DatePicker from "react-datepicker";
-import { format, addDays } from "date-fns";
+import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
@@ -66,24 +65,6 @@ function App() {
     }
   }, [toolsData, toolRentalChargesData]);
 
-  // TEMP, FOR TESTING
-  useEffect(() => {
-    console.log("toolFullData", toolFullData);
-  }, [toolFullData]);
-
-  useEffect(() => {
-    console.log("discountValue", discountValue);
-  }, [discountValue]);
-
-  useEffect(() => {
-    console.log(toolRentalChargesData, toolsData);
-  }, [toolRentalChargesData, toolsData]);
-
-  useEffect(() => {
-    console.log("selectedTool", selectedTool);
-  }, [selectedTool]);
-  // END TEMP, FOR TESTING
-
   const toolSelectOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTool(JSON.parse(event.target.value));
   };
@@ -97,29 +78,6 @@ function App() {
     );
     setDiscountValue(discountVal);
   };
-
-  // Temp
-  useEffect(() => {
-    if (
-      selectedTool?.charges !== undefined &&
-      startDate !== null &&
-      endDate !== null
-    ) {
-      const chargedDays = billableDays(
-        startDate,
-        endDate,
-        selectedTool.charges
-      );
-      console.log("chargedDays", chargedDays);
-    }
-  }, [selectedTool?.charges, startDate, endDate]);
-
-  // const getRentalAgreement = (
-  //   startDate: Date,
-  //   endDate: Date,
-  //   tool: ToolFullData,
-  //   discount: number
-  // ) => {};
 
   return (
     <>

@@ -1,5 +1,4 @@
 import {
-  Description,
   Dialog,
   DialogPanel,
   DialogTitle,
@@ -71,60 +70,55 @@ const RentalAgreement = (props: Props) => {
             <DialogTitle className="font-bold">
               {isError ? "Error creating Rental Agreement" : "Rental Agreement"}
             </DialogTitle>
-            <Description>
-              {isError ? (
-                isError
-              ) : (
-                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-                  <div className="text-right">Tool Code:</div>
-                  <div>{activeTool?.code}</div>
-                  <div className="text-right">Tool Type:</div>
-                  <div>{activeTool?.type}</div>
-                  <div className="text-right">Tool Brand:</div>
-                  <div>{activeTool?.brand}</div>
-                  <div className="text-right">Checkout Date:</div>
-                  <div>{formattedDate(props.startDate)}</div>
-                  <div className="text-right">Return Date:</div>
-                  <div>{formattedDate(props.endDate)}</div>
-                  <div className="text-right">Daily Rental Charge:</div>
-                  <div>${activeTool?.dailyCharge}</div>
-                  {activeTool?.charges ? (
-                    <>
-                      <div className="text-right">Chargeable days:</div>
-                      <div>
-                        {billableDays(
-                          props.startDate,
-                          props.endDate,
-                          activeTool?.charges
-                        )}
-                      </div>
-                    </>
-                  ) : null}
-                  {finalCosts ? (
-                    <>
-                      <div className="text-right">Pre-discount amount:</div>
-                      <div>
-                        ${roundToNearestCent(finalCosts.preDiscountAmount)}
-                      </div>
-                      <div className="text-right">Discount percent:</div>
-                      <div>{props.discount}%</div>
-                      <div className="text-right">Discount amount:</div>
-                      <div>
-                        ${roundToNearestCent(finalCosts.discountAmount)}
-                      </div>
-                      <div className="text-right">Final amount:</div>
-                      <div className="font-bold">
-                        $
-                        {roundToNearestCent(
-                          finalCosts.preDiscountAmount -
-                            finalCosts.discountAmount
-                        )}
-                      </div>
-                    </>
-                  ) : null}
-                </div>
-              )}
-            </Description>
+            {isError ? (
+              <div>{isError}</div>
+            ) : (
+              <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                <div className="text-right">Tool Code:</div>
+                <div>{activeTool?.code}</div>
+                <div className="text-right">Tool Type:</div>
+                <div>{activeTool?.type}</div>
+                <div className="text-right">Tool Brand:</div>
+                <div>{activeTool?.brand}</div>
+                <div className="text-right">Checkout Date:</div>
+                <div>{formattedDate(props.startDate)}</div>
+                <div className="text-right">Return Date:</div>
+                <div>{formattedDate(props.endDate)}</div>
+                <div className="text-right">Daily Rental Charge:</div>
+                <div>${activeTool?.dailyCharge}</div>
+                {activeTool?.charges ? (
+                  <>
+                    <div className="text-right">Chargeable days:</div>
+                    <div>
+                      {billableDays(
+                        props.startDate,
+                        props.endDate,
+                        activeTool?.charges
+                      )}
+                    </div>
+                  </>
+                ) : null}
+                {finalCosts ? (
+                  <>
+                    <div className="text-right">Pre-discount amount:</div>
+                    <div>
+                      ${roundToNearestCent(finalCosts.preDiscountAmount)}
+                    </div>
+                    <div className="text-right">Discount percent:</div>
+                    <div>{props.discount}%</div>
+                    <div className="text-right">Discount amount:</div>
+                    <div>${roundToNearestCent(finalCosts.discountAmount)}</div>
+                    <div className="text-right">Final amount:</div>
+                    <div className="font-bold">
+                      $
+                      {roundToNearestCent(
+                        finalCosts.preDiscountAmount - finalCosts.discountAmount
+                      )}
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            )}
 
             <button
               onClick={() => setIsOpen(false)}
