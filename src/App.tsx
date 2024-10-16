@@ -7,7 +7,6 @@ import {
 import { GetTools, GetRentalCharges } from "./utils/api";
 import { formattedDate } from "./utils";
 import RentalAgreement from "./components/RentalAgreement";
-import "./App.css";
 import DatePicker from "react-datepicker";
 import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
