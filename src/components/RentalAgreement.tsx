@@ -56,7 +56,7 @@ const RentalAgreement = (props: Props) => {
       setIsOpen(true);
     }
   };
- 
+
   return (
     <>
       <button
@@ -73,7 +73,7 @@ const RentalAgreement = (props: Props) => {
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
           <DialogPanel className="max-w-lg space-y-4 border bg-white p-12">
-            <DialogTitle className="font-bold">
+            <DialogTitle className="font-bold text-center text-lg">
               {isError ? "Error creating Rental Agreement" : "Rental Agreement"}
             </DialogTitle>
             {isError ? (
@@ -81,29 +81,25 @@ const RentalAgreement = (props: Props) => {
             ) : (
               <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
                 <div className="text-right">Tool Code:</div>
-                <div>{activeTool?.code}</div>
+                <div>{activeTool!.code}</div>
                 <div className="text-right">Tool Type:</div>
-                <div>{activeTool?.type}</div>
+                <div>{activeTool!.type}</div>
                 <div className="text-right">Tool Brand:</div>
-                <div>{activeTool?.brand}</div>
+                <div>{activeTool!.brand}</div>
                 <div className="text-right">Checkout Date:</div>
                 <div>{formattedDate(props.startDate)}</div>
                 <div className="text-right">Return Date:</div>
                 <div>{formattedDate(props.endDate)}</div>
                 <div className="text-right">Daily Rental Charge:</div>
-                <div>${activeTool?.dailyCharge}</div>
-                {activeTool?.charges ? (
-                  <>
-                    <div className="text-right">Chargeable days:</div>
-                    <div>
-                      {billableDays(
-                        props.startDate,
-                        props.endDate,
-                        activeTool?.charges
-                      )}
-                    </div>
-                  </>
-                ) : null}
+                <div>${activeTool!.dailyCharge}</div>
+                <div className="text-right">Chargeable days:</div>
+                <div>
+                  {billableDays(
+                    props.startDate,
+                    props.endDate,
+                    activeTool!.charges
+                  )}
+                </div>
                 {finalCosts ? (
                   <>
                     <div className="text-right">Pre-discount amount:</div>
@@ -114,7 +110,7 @@ const RentalAgreement = (props: Props) => {
                     <div>{props.discount}%</div>
                     <div className="text-right">Discount amount:</div>
                     <div>${roundToNearestCent(finalCosts.discountAmount)}</div>
-                    <div className="text-right">Final amount:</div>
+                    <div className="text-right font-bold">Final amount:</div>
                     <div className="font-bold">
                       $
                       {roundToNearestCent(

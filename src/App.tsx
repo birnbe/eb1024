@@ -56,8 +56,8 @@ function App() {
           );
           return {
             ...tool,
-            dailyCharge: toolByType?.dailyCharge || 0,
-            charges: toolByType?.charges || undefined,
+            dailyCharge: toolByType!.dailyCharge,
+            charges: toolByType!.charges,
           };
         }
       );

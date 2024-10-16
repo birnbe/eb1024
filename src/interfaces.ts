@@ -14,7 +14,7 @@ export type ChargeableDays = {
 }
 export interface ToolRentalChargesResponse extends ToolType {
   dailyCharge: number;
-  charges?: ChargeableDays;
+  charges: ChargeableDays;
 }
 
 export interface ToolFullData extends ToolsResponse, ToolRentalChargesResponse {}

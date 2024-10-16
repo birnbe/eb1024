@@ -86,12 +86,10 @@ export const finalAmount = (
   agreementValidation(startDate, endDate, discount);
   const activeTool = getActiveTool(toolCode, toolFullData);
 
-  if (!activeTool?.charges) return;
-
-  const chargedDays = billableDays(startDate, endDate, activeTool?.charges);
-  const preDiscount = chargedDays * activeTool.dailyCharge;
+  const chargedDays = billableDays(startDate, endDate, activeTool!.charges);
+  const preDiscount = chargedDays * activeTool!.dailyCharge;
   const discountAmount =
-    (chargedDays * activeTool.dailyCharge * discount) / 100;
+    (chargedDays * activeTool!.dailyCharge * discount) / 100;
 
   return {
     preDiscountAmount: preDiscount,
